@@ -5,6 +5,8 @@
  *
  *)
 
+module S = Sexpr
+
 type id = string
 
 type expr =
@@ -18,10 +20,56 @@ type expr =
    | Expr_apply  of expr * expr list
 
 
-let rec ast_of_sexpr sx =
-   (* TODO *)
-   failwith "not implemented yet"
-                     
+let rec ast_of_sexpr sx = ast_of_expr sx
+
+and ast_of_expr ex = match ex with
+    | S.Expr_atom a -> ast_of_atom a
+    | S.Expr_list (S.Expr_atom a :: tl) ->
+      begin match a with
+        | S.Atom_id ("define") -> ast_of_define tl
+        | S.Atom_id ("if") -> ast_of_if tl
+        | S.Atom_id ("lambda") -> ast_of_lambda tl
+        | _ -> ast_of_apply (S.Expr_atom a :: tl)
+      end
+    | _ -> failwith "bad expression"
+
+and ast_of_atom a = match a with
+    | S.Atom_unit -> Expr_unit
+    | S.Atom_bool b -> Expr_bool b
+    | S.Atom_int i -> Expr_int i
+    | S.Atom_id id -> Expr_id id
+
+and  ast_of_define tl = match tl with
+  | S.Expr_atom (S.Atom_id id) :: body :: [] ->
+    Expr_define (id, ast_of_expr body)
+  | _ -> failwith "bad define"
+
+and ast_of_if tl = match tl with
+  | e1 :: e2 :: e3 :: body ->
+    let e1' = ast_of_expr e1 in
+    let e2' = ast_of_expr e2 in
+    let e3' = ast_of_expr e3 in
+    Expr_if (e1', e2', e3')
+  | _ -> failwith "bad if"
+
+and ast_of_lambda tl =
+  let id_of_expr a = match a with
+    | S.Expr_atom (S.Atom_id id) -> id
+    | _ -> failwith "invalid id"
+  in match tl with
+    | S.Expr_list l1 :: ex :: [] ->
+      let ids = List.map id_of_expr l1 in
+      let body = [ast_of_expr ex] in
+      Expr_lambda (ids, body)
+    | _ -> failwith "bad lambda"
+
+and ast_of_apply tl = match tl with
+  | fn :: args ->
+    let fn' = ast_of_expr fn in
+    let args' = List.map ast_of_expr args in
+    Expr_apply (fn', args')
+  | _ -> failwith "bad apply"
+
 
 let string_of_ast ast =
    let sprintf  = Printf.sprintf in  (* to make the code cleaner *)
