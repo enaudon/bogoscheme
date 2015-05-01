@@ -32,19 +32,25 @@
 /* rules */
 
 parse:
-  | /* empty */             { None }
+  | TOK_EOF                             { None }
+  | sexpr                               { Some $1 }
 
 sexpr:
-  | /* empty */             { Sexpr.Expr_list [] }
+  | atom                                { Sexpr.Expr_atom $1 }
+  | slist                               { Sexpr.Expr_list $1 }
 
 atom:  
-  | /* empty */             { Sexpr.Atom_unit }
+  | TOK_UNIT                            { Sexpr.Atom_unit }
+  | TOK_BOOL                            { Sexpr.Atom_bool $1 }
+  | TOK_INT                             { Sexpr.Atom_int $1 }
+  | TOK_ID                              { Sexpr.Atom_id $1 }
 
 slist:
-  | /* empty */             { [] }
+  | TOK_LPAREN sexpr_list TOK_RPAREN    { $2 }
 
 sexpr_list:
-  | /* empty */             { [] }
+  | /* empty */                         { [] }
+  | sexpr sexpr_list                    { $1 :: $2 }
 
 %%
 

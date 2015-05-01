@@ -1,0 +1,4 @@
+;; The simplest test I could think of
+
+4
+
