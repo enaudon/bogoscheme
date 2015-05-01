@@ -2,7 +2,16 @@
 # .gitignore
 #
 
-# Build files
+# Executables
+ast_test
+lexer_test
+parser_test
+
+# Lex/Yacc build files
+lexer.ml
+parser.ml
+
+# OCaml build files
 *.cmi
 *.cmo
 

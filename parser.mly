@@ -32,19 +32,19 @@
 /* rules */
 
 parse:
-  /* TODO */
+  | /* empty */             { None }
 
 sexpr:
-  /* TODO */
+  | /* empty */             { Sexpr.Expr_list [] }
 
 atom:  
-  /* TODO */
+  | /* empty */             { Sexpr.Atom_unit }
 
 slist:
-  /* TODO */
+  | /* empty */             { [] }
 
 sexpr_list:
-  /* TODO */
+  | /* empty */             { [] }
 
 %%
 
