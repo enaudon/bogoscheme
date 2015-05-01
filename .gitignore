@@ -1,0 +1,12 @@
+#
+# .gitignore
+#
+
+# Build files
+*.cmi
+*.cmo
+
+# Editor files
+*.sw?
+*~
+
